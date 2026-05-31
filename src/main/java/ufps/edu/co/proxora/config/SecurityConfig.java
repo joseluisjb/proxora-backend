@@ -32,6 +32,8 @@ public class SecurityConfig {
             .sessionManagement(s -> s
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Swagger UI
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 // Públicos
                 .requestMatchers("/api/auth/**").permitAll()
                 // Proyectos públicos (solo_metadatos o lectura sin login)

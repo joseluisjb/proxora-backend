@@ -18,44 +18,30 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "materias")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class Materia {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, unique = true, length = 150)
     private String nombre;
 
-    @Column(nullable = false, length = 100)
-    private String apellido;
-
-    @Column(nullable = false, unique = true, length = 255)
-    private String correo;
-
-    @Column(name = "contrasena_hash", nullable = false)
-    private String contrasenaHash;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_rol", nullable = false)
-    private Rol rol;
+    @Column(length = 20)
+    private String codigo;
 
     @Column(nullable = false)
-    private Boolean activo = true;
+    private Boolean activa = true;
 
-    @Column(name = "token_recuperacion")
-    private String tokenRecuperacion;
-
-    @Column(name = "token_recuperacion_expira")
-    private OffsetDateTime tokenRecuperacionExpira;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creado_por")
+    private Usuario creadoPor;
 
     @Column(name = "creado_en", nullable = false, updatable = false)
     private OffsetDateTime creadoEn = OffsetDateTime.now();
-
-    @Column(name = "actualizado_en", nullable = false)
-    private OffsetDateTime actualizadoEn = OffsetDateTime.now();
 }

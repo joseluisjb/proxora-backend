@@ -12,50 +12,40 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "proyecto_evaluadores",
+       uniqueConstraints = @UniqueConstraint(columnNames = {"id_proyecto", "id_docente"}))
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class ProyectoEvaluador {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, length = 100)
-    private String nombre;
-
-    @Column(nullable = false, length = 100)
-    private String apellido;
-
-    @Column(nullable = false, unique = true, length = 255)
-    private String correo;
-
-    @Column(name = "contrasena_hash", nullable = false)
-    private String contrasenaHash;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_proyecto", nullable = false)
+    private Proyecto proyecto;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_rol", nullable = false)
-    private Rol rol;
+    @JoinColumn(name = "id_docente", nullable = false)
+    private Usuario docente;
 
-    @Column(nullable = false)
-    private Boolean activo = true;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "asignado_por", nullable = false)
+    private Usuario asignadoPor;
 
-    @Column(name = "token_recuperacion")
-    private String tokenRecuperacion;
-
-    @Column(name = "token_recuperacion_expira")
-    private OffsetDateTime tokenRecuperacionExpira;
+    @Column(name = "correo_enviado", nullable = false)
+    private Boolean correoEnviado = false;
 
     @Column(name = "creado_en", nullable = false, updatable = false)
     private OffsetDateTime creadoEn = OffsetDateTime.now();
-
-    @Column(name = "actualizado_en", nullable = false)
-    private OffsetDateTime actualizadoEn = OffsetDateTime.now();
 }

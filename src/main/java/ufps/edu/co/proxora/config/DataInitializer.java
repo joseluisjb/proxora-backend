@@ -7,9 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import ufps.edu.co.proxora.entity.Role;
+import ufps.edu.co.proxora.entity.Rol;
 import ufps.edu.co.proxora.entity.Usuario;
-import ufps.edu.co.proxora.repository.RoleRepository;
+import ufps.edu.co.proxora.repository.RolRepository;
 import ufps.edu.co.proxora.repository.UsuarioRepository;
 
 @Component
@@ -17,7 +17,7 @@ import ufps.edu.co.proxora.repository.UsuarioRepository;
 public class DataInitializer implements ApplicationRunner {
 
     private final UsuarioRepository usuarioRepository;
-    private final RoleRepository roleRepository;
+    private final RolRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.admin.correo}")
@@ -29,7 +29,7 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         if (usuarioRepository.findByCorreo(adminCorreo).isEmpty()) {
-            Role rolAdmin = roleRepository.findById((short) 1)
+            Rol rolAdmin = roleRepository.findById((short) 1)
                 .orElseThrow(() -> new RuntimeException("Rol admin no encontrado"));
 
             Usuario admin = new Usuario();

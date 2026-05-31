@@ -13,7 +13,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import ufps.edu.co.proxora.service.impl.UserDetailsServiceImpl;
 
 @Component
 @RequiredArgsConstructor

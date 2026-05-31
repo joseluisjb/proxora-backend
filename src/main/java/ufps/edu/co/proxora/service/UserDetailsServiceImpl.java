@@ -1,4 +1,4 @@
-package ufps.edu.co.proxora.service.impl;
+package ufps.edu.co.proxora.service;
 
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
