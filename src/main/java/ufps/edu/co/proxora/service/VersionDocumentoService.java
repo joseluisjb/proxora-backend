@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.VersionDocumentoRequest;
@@ -22,7 +23,10 @@ public class VersionDocumentoService {
     private final TipoDocumentoRepository tipoRepository;
     private final UsuarioRepository usuarioRepository;
     private final ProyectoService proyectoService;
+    private final S3Service s3Service;
     private final VersionDocumentoMap versionMap;
+
+    public record DescargaResult(byte[] bytes, String nombreArchivo, String mimeType) {}
 
     public List<VersionDocumentoResponse> findByProyecto(UUID idProyecto) {
         return versionRepository.findAllByProyectoOrderByCreadoEnDesc(proyectoService.obtenerOFallar(idProyecto))
@@ -36,10 +40,51 @@ public class VersionDocumentoService {
     public VersionDocumentoResponse create(UUID idProyecto, VersionDocumentoRequest request) {
         VersionDocumento v = new VersionDocumento();
         v.setProyecto(proyectoService.obtenerOFallar(idProyecto));
-        if (request.idTipo() != null) {
-            v.setTipo(tipoRepository.findById(request.idTipo())
-                    .orElseThrow(() -> new RuntimeException("Tipo de documento no encontrado")));
-        }
+        mapRequestToEntity(request, v);
+        return versionMap.toResponse(versionRepository.save(v));
+    }
+
+    public VersionDocumentoResponse update(UUID id, VersionDocumentoRequest request) {
+        VersionDocumento v = obtenerOFallar(id);
+        mapRequestToEntity(request, v);
+        return versionMap.toResponse(versionRepository.save(v));
+    }
+
+    public void delete(UUID id) {
+        obtenerOFallar(id);
+        versionRepository.deleteById(id);
+    }
+
+    public VersionDocumentoResponse uploadDocumento(UUID idProyecto, MultipartFile archivo,
+            Short idTipo, String etiquetaVersion, UUID idSubidoPor) {
+        S3Service.UploadResult result = s3Service.uploadFile(archivo);
+        VersionDocumento v = new VersionDocumento();
+        v.setProyecto(proyectoService.obtenerOFallar(idProyecto));
+        v.setTipo(idTipo != null
+                ? tipoRepository.findById(idTipo)
+                        .orElseThrow(() -> new RuntimeException("Tipo de documento no encontrado"))
+                : null);
+        v.setEtiquetaVersion(etiquetaVersion);
+        v.setRutaS3(result.keyfile());
+        v.setNombreArchivo(archivo.getOriginalFilename());
+        v.setTamanoBytes(archivo.getSize());
+        v.setMimeType(archivo.getContentType());
+        v.setSubidoPor(usuarioRepository.findById(idSubidoPor)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado")));
+        return versionMap.toResponse(versionRepository.save(v));
+    }
+
+    public DescargaResult downloadDocumento(UUID id) {
+        VersionDocumento v = obtenerOFallar(id);
+        byte[] bytes = s3Service.downloadDocument(id);
+        return new DescargaResult(bytes, v.getNombreArchivo(), v.getMimeType());
+    }
+
+    private void mapRequestToEntity(VersionDocumentoRequest request, VersionDocumento v) {
+        v.setTipo(request.idTipo() != null
+                ? tipoRepository.findById(request.idTipo())
+                        .orElseThrow(() -> new RuntimeException("Tipo de documento no encontrado"))
+                : null);
         v.setEtiquetaVersion(request.etiquetaVersion());
         v.setRutaS3(request.rutaS3());
         v.setNombreArchivo(request.nombreArchivo());
@@ -47,7 +92,6 @@ public class VersionDocumentoService {
         v.setMimeType(request.mimeType());
         v.setSubidoPor(usuarioRepository.findById(request.idSubidoPor())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado")));
-        return versionMap.toResponse(versionRepository.save(v));
     }
 
     private VersionDocumento obtenerOFallar(UUID id) {
