@@ -63,22 +63,35 @@ public class UsuarioService {
                 .map(usuario -> usuarioMap.toUsuarioResponse(usuario));
     }
 
+    @Transactional
     public void desactivarUsuario(UUID id) {
-        usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"))
-                .setActivo(false);
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        usuario.setActivo(false);
+        usuarioRepository.save(usuario);
     }
 
+    @Transactional
     public void activarUsuario(UUID id) {
-        usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado")).setActivo(true);
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        usuario.setActivo(true);
+        usuarioRepository.save(usuario);
     }
 
+    @Transactional
     public void convertirEnDocente(UUID id) {
-        usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado")).setRol(
-                rolService.obtenerRolPorNombre("docente"));
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        usuario.setRol(rolService.obtenerRolPorNombre("docente"));
+        usuarioRepository.save(usuario);
     }
 
+    @Transactional
     public void convertirEnEstudiante(UUID id) {
-        usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado")).setRol(
-                rolService.obtenerRolPorNombre("estudiante"));
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        usuario.setRol(rolService.obtenerRolPorNombre("estudiante"));
+        usuarioRepository.save(usuario);
     }
 }
