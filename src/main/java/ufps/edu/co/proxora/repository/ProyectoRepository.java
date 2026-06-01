@@ -5,10 +5,13 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import ufps.edu.co.proxora.entity.EstadoProyecto;
 import ufps.edu.co.proxora.entity.Materia;
 import ufps.edu.co.proxora.entity.Proyecto;
+import ufps.edu.co.proxora.entity.ProyectoIntegrante;
 import ufps.edu.co.proxora.entity.Semestre;
 import ufps.edu.co.proxora.entity.Usuario;
 
@@ -18,4 +21,7 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, UUID> {
     Page<Proyecto> findAllByMateria(Materia materia, Pageable pageable);
     Page<Proyecto> findAllByRegistradoPor(Usuario registradoPor, Pageable pageable);
     Page<Proyecto> findByTituloContainingIgnoreCaseOrResumenContainingIgnoreCase(String titulo, String resumen, Pageable pageable);
+
+    @Query("SELECT pi.proyecto FROM ProyectoIntegrante pi WHERE pi.usuario = :usuario")
+    Page<Proyecto> findAllByIntegrante(@Param("usuario") Usuario usuario, Pageable pageable);
 }

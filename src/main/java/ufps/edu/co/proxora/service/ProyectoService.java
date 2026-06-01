@@ -79,6 +79,11 @@ public class ProyectoService {
         return proyectoRepository.findByTituloContainingIgnoreCaseOrResumenContainingIgnoreCase(palabra, palabra, pageable).map(this::toResponse);
     }
 
+    public Page<ProyectoResponse> findByIntegrante(UUID idUsuario, Pageable pageable) {
+        return proyectoRepository.findAllByIntegrante(obtenerUsuarioOFallar(idUsuario), pageable)
+                .map(this::toResponse);
+    }
+
     public ProyectoResponse findById(UUID id) {
         return toResponse(obtenerOFallar(id));
     }
