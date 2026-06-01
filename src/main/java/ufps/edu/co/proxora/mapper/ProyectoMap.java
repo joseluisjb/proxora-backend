@@ -26,17 +26,31 @@ public class ProyectoMap {
                                        List<ProyectoLinea> lineas,
                                        List<ProyectoEvaluador> evaluadores) {
         return ProyectoResponse.builder()
+                .id(proyecto.getId())
                 .titulo(proyecto.getTitulo())
                 .resumen(proyecto.getResumen())
-                .idSemestre(proyecto.getSemestre() != null ? proyecto.getSemestre().getId() : null)
-                .idMateria(proyecto.getMateria() != null ? proyecto.getMateria().getId() : null)
-                .idEstado(proyecto.getEstado().getId())
-                .idVisibilidad(proyecto.getVisibilidad().getId())
-                .idRegistradoPor(proyecto.getRegistradoPor().getId())
-                .integrantesIds(integrantes.stream().map(i -> i.getUsuario().getId()).toList())
-                .directoresIds(directores.stream().map(d -> d.getDocente().getId()).toList())
-                .lineasIds(lineas.stream().map(l -> l.getLineaInvestigacion().getId()).toList())
-                .evaluadoresIds(evaluadores.stream().map(e -> e.getDocente().getId()).toList())
+                .semestre(proyecto.getSemestre() != null ? proyecto.getSemestre().getNombre() : null)
+                .materia(proyecto.getMateria() != null ? proyecto.getMateria().getNombre() : null)
+                .estado(proyecto.getEstado().getNombre())
+                .visibilidad(proyecto.getVisibilidad().getNombre())
+                .registradoPor(toResumen(proyecto.getRegistradoPor()))
+                .integrantes(integrantes.stream().map(i -> toResumen(i.getUsuario())).toList())
+                .directores(directores.stream().map(d -> toResumen(d.getDocente())).toList())
+                .lineas(lineas.stream().map(l -> toLineaResponse(l.getLineaInvestigacion())).toList())
+                .evaluadores(evaluadores.stream().map(e -> toResumen(e.getDocente())).toList())
+                .creadoEn(proyecto.getCreadoEn())
+                .actualizadoEn(proyecto.getActualizadoEn())
+                .build();
+    }
+
+    private LineaInvestigacionResponse toLineaResponse(ufps.edu.co.proxora.entity.LineaInvestigacion l) {
+        return LineaInvestigacionResponse.builder()
+                .id(l.getId())
+                .nombre(l.getNombre())
+                .descripcion(l.getDescripcion())
+                .activa(l.getActiva())
+                .creadoPor(l.getCreadoPor())
+                .creadoEn(l.getCreadoEn())
                 .build();
     }
 
@@ -56,12 +70,7 @@ public class ProyectoMap {
                 .visibilidad(proyecto.getVisibilidad().getNombre())
                 .directores(directores.stream().map(d -> toResumen(d.getDocente())).toList())
                 .integrantes(integrantes.stream().map(i -> toResumen(i.getUsuario())).toList())
-                .lineas(lineas.stream().map(l -> LineaInvestigacionResponse.builder()
-                        .id(l.getLineaInvestigacion().getId())
-                        .nombre(l.getLineaInvestigacion().getNombre())
-                        .descripcion(l.getLineaInvestigacion().getDescripcion())
-                        .activa(l.getLineaInvestigacion().getActiva())
-                        .build()).toList())
+                .lineas(lineas.stream().map(l -> toLineaResponse(l.getLineaInvestigacion())).toList())
                 .evaluadores(evaluadores.stream().map(e -> toResumen(e.getDocente())).toList())
                 .versiones(versiones.stream().map(this::toVersionResponse).toList())
                 .creadoEn(proyecto.getCreadoEn())

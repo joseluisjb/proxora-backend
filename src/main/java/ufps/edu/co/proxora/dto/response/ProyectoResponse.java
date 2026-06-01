@@ -1,5 +1,6 @@
 package ufps.edu.co.proxora.dto.response;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,15 +16,18 @@ import lombok.Setter;
 @Setter
 @Builder
 public class ProyectoResponse {
+    private UUID id;
     private String titulo;
     private String resumen;
-    private UUID idSemestre;
-    private UUID idMateria;
-    private Short idEstado;
-    private Short idVisibilidad;
-    private UUID idRegistradoPor;
-    private List<UUID> integrantesIds;
-    private List<UUID> directoresIds;
-    private List<UUID> lineasIds;
-    private List<UUID> evaluadoresIds;
+    private String semestre;
+    private String materia;
+    private String estado;
+    private String visibilidad;
+    private UsuarioResumenResponse registradoPor;
+    private List<UsuarioResumenResponse> integrantes;
+    private List<UsuarioResumenResponse> directores;
+    private List<LineaInvestigacionResponse> lineas;
+    private List<UsuarioResumenResponse> evaluadores;
+    private OffsetDateTime creadoEn;
+    private OffsetDateTime actualizadoEn;
 }
