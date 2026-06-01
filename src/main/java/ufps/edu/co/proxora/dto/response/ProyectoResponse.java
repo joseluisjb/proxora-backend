@@ -27,6 +27,7 @@ public class ProyectoResponse {
     private List<UsuarioResumenResponse> integrantes;
     private List<UsuarioResumenResponse> directores;
     private List<LineaInvestigacionResponse> lineas;
+    private List<UsuarioResumenResponse> evaluadores;
     private OffsetDateTime creadoEn;
     private OffsetDateTime actualizadoEn;
 }

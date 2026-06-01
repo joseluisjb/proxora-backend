@@ -17,5 +17,6 @@ public record ProyectoRequest(
     @NotNull UUID idRegistradoPor,
     List<UUID> integrantesIds,
     List<UUID> directoresIds,
-    List<UUID> lineasIds
+    List<UUID> lineasIds,
+    List<ProyectoEvaluadorRequest> evaluadoresIds
 ) {}

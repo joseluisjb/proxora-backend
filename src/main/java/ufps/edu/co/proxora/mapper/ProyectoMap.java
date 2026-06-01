@@ -11,6 +11,7 @@ import ufps.edu.co.proxora.dto.response.UsuarioResumenResponse;
 import ufps.edu.co.proxora.dto.response.VersionDocumentoResponse;
 import ufps.edu.co.proxora.entity.Proyecto;
 import ufps.edu.co.proxora.entity.ProyectoDirector;
+import ufps.edu.co.proxora.entity.ProyectoEvaluador;
 import ufps.edu.co.proxora.entity.ProyectoIntegrante;
 import ufps.edu.co.proxora.entity.ProyectoLinea;
 import ufps.edu.co.proxora.entity.Usuario;
@@ -22,7 +23,8 @@ public class ProyectoMap {
     public ProyectoResponse toResponse(Proyecto proyecto,
                                        List<ProyectoIntegrante> integrantes,
                                        List<ProyectoDirector> directores,
-                                       List<ProyectoLinea> lineas) {
+                                       List<ProyectoLinea> lineas,
+                                       List<ProyectoEvaluador> evaluadores) {
         return ProyectoResponse.builder()
                 .id(proyecto.getId())
                 .titulo(proyecto.getTitulo())
@@ -40,6 +42,7 @@ public class ProyectoMap {
                         .descripcion(l.getLineaInvestigacion().getDescripcion())
                         .activa(l.getLineaInvestigacion().getActiva())
                         .build()).toList())
+                .evaluadores(evaluadores.stream().map(e -> toResumen(e.getDocente())).toList())
                 .creadoEn(proyecto.getCreadoEn())
                 .actualizadoEn(proyecto.getActualizadoEn())
                 .build();
@@ -49,6 +52,7 @@ public class ProyectoMap {
                                               List<ProyectoIntegrante> integrantes,
                                               List<ProyectoDirector> directores,
                                               List<ProyectoLinea> lineas,
+                                              List<ProyectoEvaluador> evaluadores,
                                               List<VersionDocumento> versiones) {
         return ProyectoDetalleResponse.builder()
                 .id(proyecto.getId())
@@ -66,6 +70,7 @@ public class ProyectoMap {
                         .descripcion(l.getLineaInvestigacion().getDescripcion())
                         .activa(l.getLineaInvestigacion().getActiva())
                         .build()).toList())
+                .evaluadores(evaluadores.stream().map(e -> toResumen(e.getDocente())).toList())
                 .versiones(versiones.stream().map(this::toVersionResponse).toList())
                 .creadoEn(proyecto.getCreadoEn())
                 .build();

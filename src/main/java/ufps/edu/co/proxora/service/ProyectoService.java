@@ -21,10 +21,13 @@ import ufps.edu.co.proxora.entity.ProyectoIntegranteId;
 import ufps.edu.co.proxora.entity.ProyectoLinea;
 import ufps.edu.co.proxora.entity.ProyectoLineaId;
 import ufps.edu.co.proxora.mapper.ProyectoMap;
+import ufps.edu.co.proxora.dto.request.ProyectoEvaluadorRequest;
+import ufps.edu.co.proxora.entity.ProyectoEvaluador;
 import ufps.edu.co.proxora.repository.EstadoProyectoRepository;
 import ufps.edu.co.proxora.repository.LineaInvestigacionRepository;
 import ufps.edu.co.proxora.repository.NivelVisibilidadRepository;
 import ufps.edu.co.proxora.repository.ProyectoDirectorRepository;
+import ufps.edu.co.proxora.repository.ProyectoEvaluadorRepository;
 import ufps.edu.co.proxora.repository.ProyectoIntegranteRepository;
 import ufps.edu.co.proxora.repository.ProyectoLineaRepository;
 import ufps.edu.co.proxora.repository.ProyectoRepository;
@@ -39,6 +42,7 @@ public class ProyectoService {
     private final ProyectoIntegranteRepository integranteRepository;
     private final ProyectoDirectorRepository directorRepository;
     private final ProyectoLineaRepository lineaRepository;
+    private final ProyectoEvaluadorRepository evaluadorRepository;
     private final UsuarioRepository usuarioRepository;
     private final EstadoProyectoRepository estadoRepository;
     private final NivelVisibilidadRepository visibilidadRepository;
@@ -86,6 +90,7 @@ public class ProyectoService {
                 integranteRepository.findAllByProyecto(proyecto),
                 directorRepository.findAllByProyecto(proyecto),
                 lineaRepository.findAllByProyecto(proyecto),
+                evaluadorRepository.findAllByProyecto(proyecto),
                 versionDocumentoRepository.findAllByProyectoOrderByCreadoEnDesc(proyecto));
     }
 
@@ -107,6 +112,7 @@ public class ProyectoService {
         integranteRepository.deleteAll(integranteRepository.findAllByProyecto(saved));
         directorRepository.deleteAll(directorRepository.findAllByProyecto(saved));
         lineaRepository.deleteAll(lineaRepository.findAllByProyecto(saved));
+        evaluadorRepository.deleteAll(evaluadorRepository.findAllByProyecto(saved));
         saveRelaciones(saved, request);
         return toResponse(saved);
     }
@@ -219,13 +225,23 @@ public class ProyectoService {
                                 .orElseThrow(() -> new RuntimeException("Línea de investigación no encontrada"))));
             });
         }
+        if (request.evaluadoresIds() != null) {
+            request.evaluadoresIds().forEach(e -> {
+                ProyectoEvaluador evaluador = new ProyectoEvaluador();
+                evaluador.setProyecto(proyecto);
+                evaluador.setDocente(obtenerUsuarioOFallar(e.idDocente()));
+                evaluador.setAsignadoPor(obtenerUsuarioOFallar(e.idAsignadoPor()));
+                evaluadorRepository.save(evaluador);
+            });
+        }
     }
 
     private ProyectoResponse toResponse(Proyecto proyecto) {
         return proyectoMap.toResponse(proyecto,
                 integranteRepository.findAllByProyecto(proyecto),
                 directorRepository.findAllByProyecto(proyecto),
-                lineaRepository.findAllByProyecto(proyecto));
+                lineaRepository.findAllByProyecto(proyecto),
+                evaluadorRepository.findAllByProyecto(proyecto));
     }
 
     private ufps.edu.co.proxora.entity.EstadoProyecto obtenerEstadoOFallar(Short id) {
