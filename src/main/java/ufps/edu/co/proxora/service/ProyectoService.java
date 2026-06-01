@@ -20,6 +20,7 @@ import ufps.edu.co.proxora.entity.ProyectoIntegrante;
 import ufps.edu.co.proxora.entity.ProyectoIntegranteId;
 import ufps.edu.co.proxora.entity.ProyectoLinea;
 import ufps.edu.co.proxora.entity.ProyectoLineaId;
+import ufps.edu.co.proxora.entity.Usuario;
 import ufps.edu.co.proxora.mapper.ProyectoMap;
 import ufps.edu.co.proxora.entity.ProyectoEvaluador;
 import ufps.edu.co.proxora.repository.EstadoProyectoRepository;
