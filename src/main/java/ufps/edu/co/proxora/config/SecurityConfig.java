@@ -34,6 +34,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(s -> s
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((req, res, e) ->
+                    res.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "No autenticado"))
+            )
             .authorizeHttpRequests(auth -> auth
                 // Swagger UI
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
@@ -45,6 +49,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/lineas-investigacion/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/materias/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/semestres/**").permitAll()
+                // Escritura requiere autenticación
+                .requestMatchers(HttpMethod.POST, "/api/proyectos/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/proyectos/**").authenticated()
+                .requestMatchers(HttpMethod.PATCH, "/api/proyectos/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/proyectos/**").authenticated()
                 // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             )
