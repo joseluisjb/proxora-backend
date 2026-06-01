@@ -39,8 +39,11 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 // Públicos
                 .requestMatchers("/api/auth/**").permitAll()
-                // Proyectos públicos (solo_metadatos o lectura sin login)
-                .requestMatchers(HttpMethod.GET, "/api/proyectos/publicos/**").permitAll()
+                // Endpoints de lectura pública
+                .requestMatchers(HttpMethod.GET, "/api/proyectos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/lineas-investigacion/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/materias/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/semestres/**").permitAll()
                 // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             )
