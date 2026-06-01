@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,9 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +24,6 @@ import ufps.edu.co.proxora.dto.request.ProyectoRequest;
 import ufps.edu.co.proxora.dto.response.ProyectoDetalleResponse;
 import ufps.edu.co.proxora.dto.response.ProyectoResponse;
 import ufps.edu.co.proxora.service.ProyectoService;
-import ufps.edu.co.proxora.service.VersionDocumentoService;
 
 @RestController
 @RequestMapping("/api/proyectos")
@@ -35,7 +31,6 @@ import ufps.edu.co.proxora.service.VersionDocumentoService;
 public class ProyectoController {
 
     private final ProyectoService proyectoService;
-    private final VersionDocumentoService versionService;
 
     @GetMapping("/lista")
     public ResponseEntity<List<ProyectoResponse>> findAll() {
@@ -82,15 +77,9 @@ public class ProyectoController {
         return ResponseEntity.ok(proyectoService.findDetalle(id));
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProyectoResponse> create(
-            @RequestPart("datos") @Valid ProyectoRequest request,
-            @RequestPart("archivo") MultipartFile archivo,
-            @RequestParam("etiquetaVersion") String etiquetaVersion,
-            @RequestParam(value = "idTipo", required = false) Short idTipo) {
-        ProyectoResponse proyecto = proyectoService.create(request);
-        versionService.uploadDocumento(proyecto.getId(), archivo, idTipo, etiquetaVersion, request.idRegistradoPor());
-        return ResponseEntity.status(HttpStatus.CREATED).body(proyecto);
+    @PostMapping
+    public ResponseEntity<ProyectoResponse> create(@Valid @RequestBody ProyectoRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(proyectoService.create(request));
     }
 
     @PutMapping("/{id}")
