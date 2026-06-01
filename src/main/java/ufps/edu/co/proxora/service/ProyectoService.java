@@ -21,7 +21,6 @@ import ufps.edu.co.proxora.entity.ProyectoIntegranteId;
 import ufps.edu.co.proxora.entity.ProyectoLinea;
 import ufps.edu.co.proxora.entity.ProyectoLineaId;
 import ufps.edu.co.proxora.mapper.ProyectoMap;
-import ufps.edu.co.proxora.dto.request.ProyectoEvaluadorRequest;
 import ufps.edu.co.proxora.entity.ProyectoEvaluador;
 import ufps.edu.co.proxora.repository.EstadoProyectoRepository;
 import ufps.edu.co.proxora.repository.LineaInvestigacionRepository;
@@ -226,11 +225,12 @@ public class ProyectoService {
             });
         }
         if (request.evaluadoresIds() != null) {
-            request.evaluadoresIds().forEach(e -> {
+            Usuario asignadoPor = obtenerUsuarioOFallar(request.idRegistradoPor());
+            request.evaluadoresIds().forEach(idDocente -> {
                 ProyectoEvaluador evaluador = new ProyectoEvaluador();
                 evaluador.setProyecto(proyecto);
-                evaluador.setDocente(obtenerUsuarioOFallar(e.idDocente()));
-                evaluador.setAsignadoPor(obtenerUsuarioOFallar(e.idAsignadoPor()));
+                evaluador.setDocente(obtenerUsuarioOFallar(idDocente));
+                evaluador.setAsignadoPor(asignadoPor);
                 evaluadorRepository.save(evaluador);
             });
         }

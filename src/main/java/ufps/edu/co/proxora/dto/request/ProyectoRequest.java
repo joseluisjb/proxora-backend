@@ -18,5 +18,5 @@ public record ProyectoRequest(
     List<UUID> integrantesIds,
     List<UUID> directoresIds,
     List<UUID> lineasIds,
-    List<ProyectoEvaluadorRequest> evaluadoresIds
+    List<UUID> evaluadoresIds
 ) {}
