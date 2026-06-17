@@ -1,7 +1,9 @@
 package ufps.edu.co.proxora.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -11,16 +13,25 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class CorsConfig {
 
+    // URL del frontend en producción (ej: https://proxora.onrender.com)
+    @Value("${FRONTEND_URL:}")
+    private String frontendUrl;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(
-                "http://localhost:5173",  // Vite (dev principal)
-                "http://localhost:5174",  // Vite segunda instancia
-                "http://localhost:3000"   // CRA / Next.js
+        List<String> origins = new ArrayList<>(List.of(
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:3000"
         ));
 
+        if (!frontendUrl.isBlank()) {
+            origins.add(frontendUrl);
+        }
+
+        config.setAllowedOrigins(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization"));

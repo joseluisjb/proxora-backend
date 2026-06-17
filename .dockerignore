@@ -1,0 +1,46 @@
+# Directorio de compilación (se genera dentro del contenedor)
+target/
+
+# Control de versiones
+.git/
+.gitignore
+.gitattributes
+
+# IDEs y editores
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+.factorypath
+.springBeans
+.sts4-cache
+
+# Maven local (no se usa en el contenedor)
+.mvn/wrapper/maven-wrapper.jar
+
+# Variables de entorno locales (NUNCA subir al contenedor)
+.env
+*.env
+.env.*
+
+# Documentación y archivos de ayuda innecesarios en imagen
+HELP.md
+README.md
+
+# Logs y archivos temporales
+*.log
+logs/
+
+# Build tools de otros lenguajes (no aplica pero previene accidentes)
+node_modules/
+dist/
+
+# GitHub Actions / CI config (no necesario en imagen)
+.github/
+
+# macOS metadata
+.DS_Store
