@@ -24,7 +24,8 @@ public class CorsConfig {
         List<String> origins = new ArrayList<>(List.of(
                 "http://localhost:5173",
                 "http://localhost:5174",
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "https://proxora-frontend.vercel.app"
         ));
 
         if (!frontendUrl.isBlank()) {
