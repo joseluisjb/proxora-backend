@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.ProyectoRequest;
+import ufps.edu.co.proxora.dto.request.ProyectoUpdateRequest;
 import ufps.edu.co.proxora.dto.response.ProyectoDetalleResponse;
 import ufps.edu.co.proxora.dto.response.ProyectoResponse;
 import ufps.edu.co.proxora.entity.Proyecto;
@@ -119,6 +120,54 @@ public class ProyectoService {
         lineaRepository.deleteAll(lineaRepository.findAllByProyecto(saved));
         evaluadorRepository.deleteAll(evaluadorRepository.findAllByProyecto(saved));
         saveRelaciones(saved, request);
+        return toResponse(saved);
+    }
+
+    @Transactional
+    public ProyectoResponse patch(UUID id, ProyectoUpdateRequest request) {
+        Proyecto proyecto = obtenerOFallar(id);
+        if (request.titulo() != null) proyecto.setTitulo(request.titulo());
+        if (request.resumen() != null) proyecto.setResumen(request.resumen());
+        if (request.idSemestre() != null) proyecto.setSemestre(semestreService.obtenerOFallar(request.idSemestre()));
+        if (request.idMateria() != null) proyecto.setMateria(materiaService.obtenerOFallar(request.idMateria()));
+        if (request.idEstado() != null) proyecto.setEstado(obtenerEstadoOFallar(request.idEstado()));
+        if (request.idVisibilidad() != null) proyecto.setVisibilidad(visibilidadRepository.findById(request.idVisibilidad())
+                .orElseThrow(() -> new RuntimeException("Nivel de visibilidad no encontrado")));
+        proyecto.setActualizadoEn(OffsetDateTime.now());
+        Proyecto saved = proyectoRepository.save(proyecto);
+        if (request.integrantesIds() != null) {
+            integranteRepository.deleteAll(integranteRepository.findAllByProyecto(saved));
+            request.integrantesIds().forEach(uid -> {
+                ProyectoIntegranteId pk = new ProyectoIntegranteId(saved.getId(), uid);
+                integranteRepository.save(new ProyectoIntegrante(pk, saved, obtenerUsuarioOFallar(uid)));
+            });
+        }
+        if (request.directoresIds() != null) {
+            directorRepository.deleteAll(directorRepository.findAllByProyecto(saved));
+            request.directoresIds().forEach(uid -> {
+                ProyectoDirectorId pk = new ProyectoDirectorId(saved.getId(), uid);
+                directorRepository.save(new ProyectoDirector(pk, saved, obtenerUsuarioOFallar(uid)));
+            });
+        }
+        if (request.lineasIds() != null) {
+            lineaRepository.deleteAll(lineaRepository.findAllByProyecto(saved));
+            request.lineasIds().forEach(lid -> {
+                ProyectoLineaId pk = new ProyectoLineaId(saved.getId(), lid);
+                lineaRepository.save(new ProyectoLinea(pk, saved,
+                        lineaInvestigacionRepository.findById(lid)
+                                .orElseThrow(() -> new RuntimeException("Línea de investigación no encontrada"))));
+            });
+        }
+        if (request.evaluadoresIds() != null) {
+            evaluadorRepository.deleteAll(evaluadorRepository.findAllByProyecto(saved));
+            request.evaluadoresIds().forEach(idDocente -> {
+                ProyectoEvaluador evaluador = new ProyectoEvaluador();
+                evaluador.setProyecto(saved);
+                evaluador.setDocente(obtenerUsuarioOFallar(idDocente));
+                evaluador.setAsignadoPor(saved.getRegistradoPor());
+                evaluadorRepository.save(evaluador);
+            });
+        }
         return toResponse(saved);
     }
 

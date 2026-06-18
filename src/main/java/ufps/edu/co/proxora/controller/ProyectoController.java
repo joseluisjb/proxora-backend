@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.ProyectoRequest;
+import ufps.edu.co.proxora.dto.request.ProyectoUpdateRequest;
 import ufps.edu.co.proxora.dto.response.ProyectoDetalleResponse;
 import ufps.edu.co.proxora.dto.response.ProyectoResponse;
 import ufps.edu.co.proxora.service.ProyectoService;
@@ -86,6 +87,12 @@ public class ProyectoController {
     public ResponseEntity<ProyectoResponse> update(@PathVariable UUID id,
             @Valid @RequestBody ProyectoRequest request) {
         return ResponseEntity.ok(proyectoService.update(id, request));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProyectoResponse> patch(@PathVariable UUID id,
+            @Valid @RequestBody ProyectoUpdateRequest request) {
+        return ResponseEntity.ok(proyectoService.patch(id, request));
     }
 
     @DeleteMapping("/{id}")
