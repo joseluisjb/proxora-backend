@@ -76,8 +76,12 @@ public class VersionDocumentoService {
 
     public DescargaResult downloadDocumento(UUID id) {
         VersionDocumento v = obtenerOFallar(id);
-        byte[] bytes = s3Service.downloadDocument(id);
-        return new DescargaResult(bytes, v.getNombreArchivo(), v.getMimeType());
+        try {
+            byte[] bytes = s3Service.downloadDocument(id);
+            return new DescargaResult(bytes, v.getNombreArchivo(), v.getMimeType());
+        } catch (software.amazon.awssdk.services.s3.model.NoSuchKeyException e) {
+            throw new RuntimeException("El archivo no existe en el almacenamiento. Key: " + v.getRutaS3());
+        }
     }
 
     private void mapRequestToEntity(VersionDocumentoRequest request, VersionDocumento v) {

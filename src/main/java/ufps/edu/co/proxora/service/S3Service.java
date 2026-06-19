@@ -42,7 +42,9 @@ public class S3Service {
                     .build();
             s3Client.putObject(putRequest, RequestBody.fromBytes(file.getBytes()));
         } catch (IOException e) {
-            throw new RuntimeException("Error al subir archivo a S3", e);
+            throw new RuntimeException("Error al leer el archivo: " + e.getMessage(), e);
+        } catch (software.amazon.awssdk.core.exception.SdkException e) {
+            throw new RuntimeException("Error al subir archivo a S3: " + e.getMessage(), e);
         }
         String url = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + key;
         return new UploadResult(key, url);
