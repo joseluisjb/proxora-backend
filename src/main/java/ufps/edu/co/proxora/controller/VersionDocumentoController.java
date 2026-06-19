@@ -3,6 +3,8 @@ package ufps.edu.co.proxora.controller;
 import java.util.List;
 import java.util.UUID;
 
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -79,7 +81,7 @@ public class VersionDocumentoController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType(mimeType));
         headers.setContentDisposition(ContentDisposition.attachment()
-                .filename(result.nombreArchivo())
+                .filename(result.nombreArchivo(), StandardCharsets.UTF_8)
                 .build());
         return ResponseEntity.ok().headers(headers).body(result.bytes());
     }
