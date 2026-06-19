@@ -137,6 +137,7 @@ public class ProyectoService {
         Proyecto saved = proyectoRepository.save(proyecto);
         if (request.integrantesIds() != null) {
             integranteRepository.deleteAll(integranteRepository.findAllByProyecto(saved));
+            integranteRepository.flush();
             request.integrantesIds().forEach(uid -> {
                 ProyectoIntegranteId pk = new ProyectoIntegranteId(saved.getId(), uid);
                 integranteRepository.save(new ProyectoIntegrante(pk, saved, obtenerUsuarioOFallar(uid)));
@@ -144,6 +145,7 @@ public class ProyectoService {
         }
         if (request.directoresIds() != null) {
             directorRepository.deleteAll(directorRepository.findAllByProyecto(saved));
+            directorRepository.flush();
             request.directoresIds().forEach(uid -> {
                 ProyectoDirectorId pk = new ProyectoDirectorId(saved.getId(), uid);
                 directorRepository.save(new ProyectoDirector(pk, saved, obtenerUsuarioOFallar(uid)));
@@ -151,6 +153,7 @@ public class ProyectoService {
         }
         if (request.lineasIds() != null) {
             lineaRepository.deleteAll(lineaRepository.findAllByProyecto(saved));
+            lineaRepository.flush();
             request.lineasIds().forEach(lid -> {
                 ProyectoLineaId pk = new ProyectoLineaId(saved.getId(), lid);
                 lineaRepository.save(new ProyectoLinea(pk, saved,
@@ -160,6 +163,7 @@ public class ProyectoService {
         }
         if (request.evaluadoresIds() != null) {
             evaluadorRepository.deleteAll(evaluadorRepository.findAllByProyecto(saved));
+            evaluadorRepository.flush();
             request.evaluadoresIds().forEach(idDocente -> {
                 ProyectoEvaluador evaluador = new ProyectoEvaluador();
                 evaluador.setProyecto(saved);
