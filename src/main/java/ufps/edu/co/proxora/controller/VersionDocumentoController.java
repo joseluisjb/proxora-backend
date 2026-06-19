@@ -80,7 +80,7 @@ public class VersionDocumentoController {
         String mimeType = result.mimeType() != null ? result.mimeType() : MediaType.APPLICATION_OCTET_STREAM_VALUE;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType(mimeType));
-        headers.setContentDisposition(ContentDisposition.attachment()
+        headers.setContentDisposition(ContentDisposition.inline()
                 .filename(result.nombreArchivo(), StandardCharsets.UTF_8)
                 .build());
         return ResponseEntity.ok().headers(headers).body(result.bytes());
