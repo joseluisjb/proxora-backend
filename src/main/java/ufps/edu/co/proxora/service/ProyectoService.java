@@ -85,6 +85,16 @@ public class ProyectoService {
                 .map(this::toResponse);
     }
 
+    public Page<ProyectoResponse> findByEvaluador(UUID idUsuario, Pageable pageable) {
+        return proyectoRepository.findAllByEvaluador(obtenerUsuarioOFallar(idUsuario), pageable)
+                .map(this::toResponse);
+    }
+
+    public Page<ProyectoResponse> findByEvaluadorPendientes(UUID idUsuario, Pageable pageable) {
+        return proyectoRepository.findAllByEvaluadorPendientes(obtenerUsuarioOFallar(idUsuario), pageable)
+                .map(this::toResponse);
+    }
+
     public ProyectoResponse findById(UUID id) {
         return toResponse(obtenerOFallar(id));
     }

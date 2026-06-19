@@ -68,6 +68,16 @@ public class ProyectoController {
         return ResponseEntity.ok(proyectoService.findByIntegrante(idUsuario, pageable));
     }
 
+    @GetMapping("/evaluador/{idUsuario}")
+    public ResponseEntity<Page<ProyectoResponse>> findByEvaluador(@PathVariable UUID idUsuario, Pageable pageable) {
+        return ResponseEntity.ok(proyectoService.findByEvaluador(idUsuario, pageable));
+    }
+
+    @GetMapping("/evaluador/{idUsuario}/pendientes")
+    public ResponseEntity<Page<ProyectoResponse>> findByEvaluadorPendientes(@PathVariable UUID idUsuario, Pageable pageable) {
+        return ResponseEntity.ok(proyectoService.findByEvaluadorPendientes(idUsuario, pageable));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ProyectoResponse> findById(@PathVariable UUID id) {
         return ResponseEntity.ok(proyectoService.findById(id));

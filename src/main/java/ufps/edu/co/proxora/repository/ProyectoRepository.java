@@ -24,4 +24,10 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, UUID> {
 
     @Query("SELECT pi.proyecto FROM ProyectoIntegrante pi WHERE pi.usuario = :usuario")
     Page<Proyecto> findAllByIntegrante(@Param("usuario") Usuario usuario, Pageable pageable);
+
+    @Query("SELECT pe.proyecto FROM ProyectoEvaluador pe WHERE pe.docente = :docente")
+    Page<Proyecto> findAllByEvaluador(@Param("docente") Usuario docente, Pageable pageable);
+
+    @Query("SELECT pe.proyecto FROM ProyectoEvaluador pe WHERE pe.docente = :docente AND NOT EXISTS (SELECT e FROM Evaluacion e WHERE e.proyecto = pe.proyecto AND e.docente = :docente)")
+    Page<Proyecto> findAllByEvaluadorPendientes(@Param("docente") Usuario docente, Pageable pageable);
 }
