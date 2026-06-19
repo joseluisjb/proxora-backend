@@ -71,6 +71,14 @@ public class EvaluacionService {
         evaluadorRepository.deleteById(idEvaluador);
     }
 
+    public long contarProyectosComoEvaluador(UUID idDocente) {
+        return evaluadorRepository.countByDocente(obtenerUsuarioOFallar(idDocente));
+    }
+
+    public long contarProyectosPendientesDeCalificacion(UUID idDocente) {
+        return evaluadorRepository.countPendientesByDocente(obtenerUsuarioOFallar(idDocente));
+    }
+
     private Usuario obtenerUsuarioOFallar(UUID id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));

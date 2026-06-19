@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import ufps.edu.co.proxora.dto.request.UsuarioRequest;
 import ufps.edu.co.proxora.dto.response.UsuarioResponse;
+import ufps.edu.co.proxora.service.EvaluacionService;
 import ufps.edu.co.proxora.service.UsuarioService;
 
 @RestController
@@ -27,6 +28,9 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private EvaluacionService evaluacionService;
 
     @PostMapping
     public ResponseEntity<UsuarioResponse> crear(@Valid @RequestBody UsuarioRequest request) {
@@ -77,5 +81,15 @@ public class UsuarioController {
     public ResponseEntity<Void> convertirEnEstudiante(@PathVariable UUID id) {
         usuarioService.convertirEnEstudiante(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/evaluaciones/total")
+    public ResponseEntity<Long> contarProyectosComoEvaluador(@PathVariable UUID id) {
+        return ResponseEntity.ok(evaluacionService.contarProyectosComoEvaluador(id));
+    }
+
+    @GetMapping("/{id}/evaluaciones/pendientes")
+    public ResponseEntity<Long> contarProyectosPendientesDeCalificacion(@PathVariable UUID id) {
+        return ResponseEntity.ok(evaluacionService.contarProyectosPendientesDeCalificacion(id));
     }
 }
