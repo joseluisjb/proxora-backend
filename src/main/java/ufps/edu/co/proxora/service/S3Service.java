@@ -32,7 +32,7 @@ public class S3Service {
     public record UploadResult(String keyfile, String enlaceurl) {}
 
     public UploadResult uploadFile(MultipartFile file) {
-        String key = "versiones/" + UUID.randomUUID() + "/" + file.getOriginalFilename();
+        String key = UUID.randomUUID() + "_" + file.getOriginalFilename();
         try {
             PutObjectRequest putRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
