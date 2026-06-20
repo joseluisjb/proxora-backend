@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -85,7 +87,7 @@ public class VersionDocumentoService {
         try {
             byte[] bytes = s3Service.downloadDocument(id);
             return new DescargaResult(bytes, v.getNombreArchivo(), v.getMimeType());
-        } catch (software.amazon.awssdk.services.s3.model.NoSuchKeyException e) {
+        } catch (NoSuchKeyException e) {
             throw new ResourceNotFoundException("El archivo no existe en el almacenamiento. Key: " + v.getRutaS3());
         }
     }

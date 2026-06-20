@@ -3,6 +3,7 @@ package ufps.edu.co.proxora.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -36,7 +37,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((req, res, e) ->
-                    res.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "No autenticado"))
+                    res.sendError(HttpStatus.UNAUTHORIZED.value(), "No autenticado"))
             )
             .authorizeHttpRequests(auth -> auth
                 // Preflight CORS

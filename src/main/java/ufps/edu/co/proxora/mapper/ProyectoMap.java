@@ -13,6 +13,7 @@ import ufps.edu.co.proxora.entity.Proyecto;
 import ufps.edu.co.proxora.entity.ProyectoDirector;
 import ufps.edu.co.proxora.entity.ProyectoEvaluador;
 import ufps.edu.co.proxora.entity.ProyectoIntegrante;
+import ufps.edu.co.proxora.entity.LineaInvestigacion;
 import ufps.edu.co.proxora.entity.ProyectoLinea;
 import ufps.edu.co.proxora.entity.Usuario;
 import ufps.edu.co.proxora.entity.VersionDocumento;
@@ -43,7 +44,7 @@ public class ProyectoMap {
                 .build();
     }
 
-    private LineaInvestigacionResponse toLineaResponse(ufps.edu.co.proxora.entity.LineaInvestigacion l) {
+    private LineaInvestigacionResponse toLineaResponse(LineaInvestigacion l) {
         return LineaInvestigacionResponse.builder()
                 .id(l.getId())
                 .nombre(l.getNombre())

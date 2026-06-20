@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.exception.ResourceNotFoundException;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -42,7 +43,7 @@ public class S3Service {
             s3Client.putObject(putRequest, RequestBody.fromBytes(file.getBytes()));
         } catch (IOException e) {
             throw new RuntimeException("Error al leer el archivo: " + e.getMessage(), e);
-        } catch (software.amazon.awssdk.core.exception.SdkException e) {
+        } catch (SdkException e) {
             throw new RuntimeException("Error al subir archivo a S3: " + e.getMessage(), e);
         }
         String url = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + key;

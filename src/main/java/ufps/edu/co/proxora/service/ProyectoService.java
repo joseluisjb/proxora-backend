@@ -21,6 +21,7 @@ import ufps.edu.co.proxora.entity.ProyectoIntegrante;
 import ufps.edu.co.proxora.entity.ProyectoIntegranteId;
 import ufps.edu.co.proxora.entity.ProyectoLinea;
 import ufps.edu.co.proxora.entity.ProyectoLineaId;
+import ufps.edu.co.proxora.entity.EstadoProyecto;
 import ufps.edu.co.proxora.entity.Usuario;
 import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.ProyectoMap;
@@ -310,12 +311,12 @@ public class ProyectoService {
                 evaluadorRepository.findAllByProyecto(proyecto));
     }
 
-    private ufps.edu.co.proxora.entity.EstadoProyecto obtenerEstadoOFallar(Short id) {
+    private EstadoProyecto obtenerEstadoOFallar(Short id) {
         return estadoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Estado de proyecto no encontrado"));
     }
 
-    private ufps.edu.co.proxora.entity.Usuario obtenerUsuarioOFallar(UUID id) {
+    private Usuario obtenerUsuarioOFallar(UUID id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     }

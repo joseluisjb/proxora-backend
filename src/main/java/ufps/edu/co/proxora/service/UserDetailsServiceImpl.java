@@ -1,6 +1,7 @@
 package ufps.edu.co.proxora.service;
 
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new DisabledException("Usuario inactivo");
         }
 
-        return org.springframework.security.core.userdetails.User.builder()
+        return User.builder()
             .username(usuario.getCorreo())
             .password(usuario.getContrasenaHash())
             .roles(usuario.getRol().getNombre().toUpperCase())
