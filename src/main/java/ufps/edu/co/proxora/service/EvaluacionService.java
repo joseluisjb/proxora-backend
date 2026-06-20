@@ -33,7 +33,7 @@ public class EvaluacionService {
     private final CorreoService correoService;
 
     public List<EvaluacionResponse> findByProyecto(UUID idProyecto) {
-        return evaluacionRepository.findAllByProyecto(proyectoService.obtenerOFallar(idProyecto))
+        return evaluacionRepository.findAllByProyectoOrderByCreadoEnDesc(proyectoService.obtenerOFallar(idProyecto))
                 .stream().map(evaluacionMap::toEvaluacionResponse).toList();
     }
 

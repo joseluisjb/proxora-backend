@@ -10,6 +10,6 @@ import ufps.edu.co.proxora.entity.Proyecto;
 import ufps.edu.co.proxora.entity.Usuario;
 
 public interface EvaluacionRepository extends JpaRepository<Evaluacion, UUID> {
-    List<Evaluacion> findAllByProyecto(Proyecto proyecto);
+    List<Evaluacion> findAllByProyectoOrderByCreadoEnDesc(Proyecto proyecto);
     boolean existsByProyectoAndDocente(Proyecto proyecto, Usuario docente);
 }
