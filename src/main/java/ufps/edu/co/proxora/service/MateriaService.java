@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.MateriaRequest;
@@ -39,6 +40,7 @@ public class MateriaService {
         return materiaMap.toResponse(obtenerOFallar(id));
     }
 
+    @Transactional
     public MateriaResponse create(MateriaRequest request) {
         Materia materia = new Materia();
         materia.setNombre(request.nombre());
@@ -51,6 +53,7 @@ public class MateriaService {
         return materiaMap.toResponse(materiaRepository.save(materia));
     }
 
+    @Transactional
     public MateriaResponse update(UUID id, MateriaRequest request) {
         Materia materia = obtenerOFallar(id);
         materia.setNombre(request.nombre());
@@ -59,6 +62,7 @@ public class MateriaService {
         return materiaMap.toResponse(materiaRepository.save(materia));
     }
 
+    @Transactional
     public void delete(UUID id) {
         obtenerOFallar(id);
         materiaRepository.deleteById(id);

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class VersionDocumentoService {
         return versionMap.toResponse(obtenerOFallar(id));
     }
 
+    @Transactional
     public VersionDocumentoResponse create(UUID idProyecto, VersionDocumentoRequest request) {
         VersionDocumento v = new VersionDocumento();
         v.setProyecto(proyectoService.obtenerOFallar(idProyecto));
@@ -45,17 +47,20 @@ public class VersionDocumentoService {
         return versionMap.toResponse(versionRepository.save(v));
     }
 
+    @Transactional
     public VersionDocumentoResponse update(UUID id, VersionDocumentoRequest request) {
         VersionDocumento v = obtenerOFallar(id);
         mapRequestToEntity(request, v);
         return versionMap.toResponse(versionRepository.save(v));
     }
 
+    @Transactional
     public void delete(UUID id) {
         obtenerOFallar(id);
         versionRepository.deleteById(id);
     }
 
+    @Transactional
     public VersionDocumentoResponse uploadDocumento(UUID idProyecto, MultipartFile archivo,
             Short idTipo, String etiquetaVersion, UUID idSubidoPor) {
         S3Service.UploadResult result = s3Service.uploadFile(archivo);

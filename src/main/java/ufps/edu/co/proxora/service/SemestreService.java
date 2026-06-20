@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.SemestreRequest;
@@ -33,16 +34,19 @@ public class SemestreService {
         return semestreMap.toResponse(obtenerOFallar(id));
     }
 
+    @Transactional
     public SemestreResponse create(SemestreRequest request) {
         return semestreMap.toResponse(semestreRepository.save(semestreMap.toEntity(request)));
     }
 
+    @Transactional
     public SemestreResponse update(UUID id, SemestreRequest request) {
         Semestre semestre = obtenerOFallar(id);
         semestreMap.updateEntity(semestre, request);
         return semestreMap.toResponse(semestreRepository.save(semestre));
     }
 
+    @Transactional
     public void delete(UUID id) {
         obtenerOFallar(id);
         semestreRepository.deleteById(id);

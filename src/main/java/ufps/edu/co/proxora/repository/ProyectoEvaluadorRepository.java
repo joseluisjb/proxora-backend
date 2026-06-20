@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -18,4 +19,8 @@ public interface ProyectoEvaluadorRepository extends JpaRepository<ProyectoEvalu
 
     @Query("SELECT COUNT(pe) FROM ProyectoEvaluador pe WHERE pe.docente = :docente AND NOT EXISTS (SELECT e FROM Evaluacion e WHERE e.proyecto = pe.proyecto AND e.docente = :docente)")
     long countPendientesByDocente(@Param("docente") Usuario docente);
+
+    @Modifying(clearAutomatically = true)
+    @Query("DELETE FROM ProyectoEvaluador pe WHERE pe.proyecto = :proyecto")
+    void deleteAllByProyecto(@Param("proyecto") Proyecto proyecto);
 }

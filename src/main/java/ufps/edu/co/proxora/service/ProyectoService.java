@@ -126,10 +126,10 @@ public class ProyectoService {
         mapRequestToEntity(request, proyecto);
         proyecto.setActualizadoEn(OffsetDateTime.now());
         Proyecto saved = proyectoRepository.save(proyecto);
-        integranteRepository.deleteAll(integranteRepository.findAllByProyecto(saved));
-        directorRepository.deleteAll(directorRepository.findAllByProyecto(saved));
-        lineaRepository.deleteAll(lineaRepository.findAllByProyecto(saved));
-        evaluadorRepository.deleteAll(evaluadorRepository.findAllByProyecto(saved));
+        integranteRepository.deleteAllByProyecto(saved);
+        directorRepository.deleteAllByProyecto(saved);
+        lineaRepository.deleteAllByProyecto(saved);
+        evaluadorRepository.deleteAllByProyecto(saved);
         saveRelaciones(saved, request);
         return toResponse(saved);
     }
@@ -147,24 +147,21 @@ public class ProyectoService {
         proyecto.setActualizadoEn(OffsetDateTime.now());
         Proyecto saved = proyectoRepository.save(proyecto);
         if (request.integrantesIds() != null) {
-            integranteRepository.deleteAll(integranteRepository.findAllByProyecto(saved));
-            integranteRepository.flush();
+            integranteRepository.deleteAllByProyecto(saved);
             request.integrantesIds().forEach(uid -> {
                 ProyectoIntegranteId pk = new ProyectoIntegranteId(saved.getId(), uid);
                 integranteRepository.save(new ProyectoIntegrante(pk, saved, obtenerUsuarioOFallar(uid)));
             });
         }
         if (request.directoresIds() != null) {
-            directorRepository.deleteAll(directorRepository.findAllByProyecto(saved));
-            directorRepository.flush();
+            directorRepository.deleteAllByProyecto(saved);
             request.directoresIds().forEach(uid -> {
                 ProyectoDirectorId pk = new ProyectoDirectorId(saved.getId(), uid);
                 directorRepository.save(new ProyectoDirector(pk, saved, obtenerUsuarioOFallar(uid)));
             });
         }
         if (request.lineasIds() != null) {
-            lineaRepository.deleteAll(lineaRepository.findAllByProyecto(saved));
-            lineaRepository.flush();
+            lineaRepository.deleteAllByProyecto(saved);
             request.lineasIds().forEach(lid -> {
                 ProyectoLineaId pk = new ProyectoLineaId(saved.getId(), lid);
                 lineaRepository.save(new ProyectoLinea(pk, saved,
@@ -173,8 +170,7 @@ public class ProyectoService {
             });
         }
         if (request.evaluadoresIds() != null) {
-            evaluadorRepository.deleteAll(evaluadorRepository.findAllByProyecto(saved));
-            evaluadorRepository.flush();
+            evaluadorRepository.deleteAllByProyecto(saved);
             request.evaluadoresIds().forEach(idDocente -> {
                 ProyectoEvaluador evaluador = new ProyectoEvaluador();
                 evaluador.setProyecto(saved);

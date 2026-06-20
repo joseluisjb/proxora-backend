@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.LineaInvestigacionRequest;
@@ -37,17 +38,20 @@ public class LineaInvestigacionService {
         return lineaMap.toResponse(obtenerOFallar(id));
     }
 
+    @Transactional
     public LineaInvestigacionResponse create(LineaInvestigacionRequest request) {
         LineaInvestigacion entity = lineaMap.toEntity(request);
         return lineaMap.toResponse(lineaRepository.save(entity));
     }
 
+    @Transactional
     public LineaInvestigacionResponse update(UUID id, LineaInvestigacionRequest request) {
         LineaInvestigacion entity = obtenerOFallar(id);
         lineaMap.updateEntity(entity, request);
         return lineaMap.toResponse(lineaRepository.save(entity));
     }
 
+    @Transactional
     public void delete(UUID id) {
         obtenerOFallar(id);
         lineaRepository.deleteById(id);

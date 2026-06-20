@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.EvaluacionRequest;
@@ -44,6 +45,7 @@ public class EvaluacionService {
                 .stream().map(evaluacionMap::toEvaluadorResponse).toList();
     }
 
+    @Transactional
     public EvaluacionResponse create(UUID idProyecto, EvaluacionRequest request) {
         Proyecto proyecto = proyectoService.obtenerOFallar(idProyecto);
         Usuario docente = obtenerUsuarioOFallar(request.idDocente());
@@ -57,6 +59,7 @@ public class EvaluacionService {
         return evaluacionMap.toEvaluacionResponse(saved);
     }
 
+    @Transactional
     public ProyectoEvaluadorResponse asignarEvaluador(UUID idProyecto, ProyectoEvaluadorRequest request) {
         Proyecto proyecto = proyectoService.obtenerOFallar(idProyecto);
         Usuario docente = obtenerUsuarioOFallar(request.idDocente());
@@ -75,6 +78,7 @@ public class EvaluacionService {
         return evaluacionMap.toEvaluadorResponse(saved);
     }
 
+    @Transactional
     public void removerEvaluador(UUID idEvaluador) {
         if (!evaluadorRepository.existsById(idEvaluador)) {
             throw new ResourceNotFoundException("Evaluador no encontrado");
