@@ -2,13 +2,13 @@ package ufps.edu.co.proxora.service;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.UsuarioRequest;
 import ufps.edu.co.proxora.dto.response.UsuarioResponse;
 import ufps.edu.co.proxora.entity.Rol;
@@ -17,19 +17,13 @@ import ufps.edu.co.proxora.mapper.UsuarioMap;
 import ufps.edu.co.proxora.repository.UsuarioRepository;
 
 @Service
+@RequiredArgsConstructor
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private UsuarioMap usuarioMap;
-
-    @Autowired
-    private RolService rolService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UsuarioRepository usuarioRepository;
+    private final UsuarioMap usuarioMap;
+    private final RolService rolService;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UsuarioResponse crear(UsuarioRequest request) {
@@ -58,8 +52,8 @@ public class UsuarioService {
         return usuarioRepository.findAllByRol(rol, pageable).map(usuario -> usuarioMap.toUsuarioResponse(usuario));
     }
 
-    public Page<UsuarioResponse> findByNombreOrApellido(String nommbre, Pageable pageable){
-        return usuarioRepository.findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(nommbre, nommbre, pageable)
+    public Page<UsuarioResponse> findByNombreOrApellido(String nombre, Pageable pageable){
+        return usuarioRepository.findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(nombre, nombre, pageable)
                 .map(usuario -> usuarioMap.toUsuarioResponse(usuario));
     }
 

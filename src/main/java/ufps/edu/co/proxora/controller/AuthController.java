@@ -40,7 +40,7 @@ public class AuthController {
         );
 
         Usuario usuario = usuarioRepository.findByCorreo(request.correo())
-            .orElseThrow();
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         String token = jwtService.generateToken(usuario);
 

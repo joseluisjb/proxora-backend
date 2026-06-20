@@ -2,7 +2,6 @@ package ufps.edu.co.proxora.controller;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.UsuarioRequest;
 import ufps.edu.co.proxora.dto.response.UsuarioResponse;
 import ufps.edu.co.proxora.service.EvaluacionService;
@@ -24,13 +24,11 @@ import ufps.edu.co.proxora.service.UsuarioService;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@RequiredArgsConstructor
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
-
-    @Autowired
-    private EvaluacionService evaluacionService;
+    private final UsuarioService usuarioService;
+    private final EvaluacionService evaluacionService;
 
     @PostMapping
     public ResponseEntity<UsuarioResponse> crear(@Valid @RequestBody UsuarioRequest request) {
