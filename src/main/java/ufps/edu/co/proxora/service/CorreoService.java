@@ -5,12 +5,16 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.services.sesv2.SesV2Client;
+import software.amazon.awssdk.services.sesv2.model.Body;
+import software.amazon.awssdk.services.sesv2.model.Content;
+import software.amazon.awssdk.services.sesv2.model.Destination;
+import software.amazon.awssdk.services.sesv2.model.EmailContent;
+import software.amazon.awssdk.services.sesv2.model.Message;
+import software.amazon.awssdk.services.sesv2.model.SendEmailRequest;
 import ufps.edu.co.proxora.entity.Evaluacion;
 import ufps.edu.co.proxora.entity.Proyecto;
 import ufps.edu.co.proxora.entity.ProyectoIntegrante;
@@ -22,38 +26,44 @@ public class CorreoService {
 
     private static final Logger log = LoggerFactory.getLogger(CorreoService.class);
 
-    private final JavaMailSender mailSender;
+    private final SesV2Client sesV2Client;
 
-    @Value("${spring.mail.username}")
+    @Value("${app.mail.remitente}")
     private String remitente;
 
     public void notificarEvaluadorAsignado(Usuario docente, Proyecto proyecto) {
-        String asunto = "Proxora - Has sido asignado como evaluador";
-        String cuerpo = buildEvaluadorAsignadoHtml(docente, proyecto);
-        enviar(docente.getCorreo(), asunto, cuerpo);
-    }
-
-    public void notificarRecuperacionContrasena(String destinatario, String nombre, String linkRestablecimiento) {
-        String asunto = "Proxora - Recuperación de contraseña";
-        String cuerpo = buildRecuperacionHtml(nombre, linkRestablecimiento);
-        enviar(destinatario, asunto, cuerpo);
+        enviar(docente.getCorreo(),
+                "Proxora - Has sido asignado como evaluador",
+                buildEvaluadorAsignadoHtml(docente, proyecto));
     }
 
     public void notificarCalificacion(List<ProyectoIntegrante> integrantes, Proyecto proyecto, Evaluacion evaluacion) {
-        String asunto = "Proxora - Tu proyecto ha sido calificado";
         String cuerpo = buildCalificacionHtml(proyecto, evaluacion);
-        integrantes.forEach(i -> enviar(i.getUsuario().getCorreo(), asunto, cuerpo));
+        integrantes.forEach(i -> enviar(i.getUsuario().getCorreo(),
+                "Proxora - Tu proyecto ha sido calificado", cuerpo));
+    }
+
+    public void notificarRecuperacionContrasena(String destinatario, String nombre, String linkRestablecimiento) {
+        enviar(destinatario,
+                "Proxora - Recuperación de contraseña",
+                buildRecuperacionHtml(nombre, linkRestablecimiento));
     }
 
     private void enviar(String destinatario, String asunto, String cuerpo) {
         try {
-            MimeMessage mensaje = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mensaje, "UTF-8");
-            helper.setFrom(remitente);
-            helper.setTo(destinatario);
-            helper.setSubject(asunto);
-            helper.setText(cuerpo, true);
-            mailSender.send(mensaje);
+            SendEmailRequest request = SendEmailRequest.builder()
+                    .fromEmailAddress(remitente)
+                    .destination(Destination.builder().toAddresses(destinatario).build())
+                    .content(EmailContent.builder()
+                            .simple(Message.builder()
+                                    .subject(Content.builder().data(asunto).charset("UTF-8").build())
+                                    .body(Body.builder()
+                                            .html(Content.builder().data(cuerpo).charset("UTF-8").build())
+                                            .build())
+                                    .build())
+                            .build())
+                    .build();
+            sesV2Client.sendEmail(request);
         } catch (Exception e) {
             log.error("Error al enviar correo a {}: {}", destinatario, e.getMessage());
         }
