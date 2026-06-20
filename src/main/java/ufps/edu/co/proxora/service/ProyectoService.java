@@ -55,52 +55,63 @@ public class ProyectoService {
     private final ProyectoMap proyectoMap;
     private final VersionDocumentoRepository versionDocumentoRepository;
 
+    @Transactional(readOnly = true)
     public List<ProyectoResponse> findAll() {
         return proyectoRepository.findAll().stream().map(this::toResponse).toList();
     }
 
+    @Transactional(readOnly = true)
     public Page<ProyectoResponse> findAll(Pageable pageable) {
         return proyectoRepository.findAll(pageable).map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProyectoResponse> findBySemestre(UUID idSemestre, Pageable pageable) {
         return proyectoRepository.findAllBySemestre(semestreService.obtenerOFallar(idSemestre), pageable)
                 .map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProyectoResponse> findByEstado(Short idEstado, Pageable pageable) {
         return proyectoRepository.findAllByEstado(obtenerEstadoOFallar(idEstado), pageable)
                 .map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProyectoResponse> findByMateria(UUID idMateria, Pageable pageable) {
         return proyectoRepository.findAllByMateria(materiaService.obtenerOFallar(idMateria), pageable)
                 .map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProyectoResponse> findByTitulo(String palabra, Pageable pageable) {
         return proyectoRepository.findByTituloContainingIgnoreCaseOrResumenContainingIgnoreCase(palabra, palabra, pageable).map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProyectoResponse> findByIntegrante(UUID idUsuario, Pageable pageable) {
         return proyectoRepository.findAllByIntegrante(obtenerUsuarioOFallar(idUsuario), pageable)
                 .map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProyectoResponse> findByEvaluador(UUID idUsuario, Pageable pageable) {
         return proyectoRepository.findAllByEvaluador(obtenerUsuarioOFallar(idUsuario), pageable)
                 .map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<ProyectoResponse> findByEvaluadorPendientes(UUID idUsuario, Pageable pageable) {
         return proyectoRepository.findAllByEvaluadorPendientes(obtenerUsuarioOFallar(idUsuario), pageable)
                 .map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public ProyectoResponse findById(UUID id) {
         return toResponse(obtenerOFallar(id));
     }
 
+    @Transactional(readOnly = true)
     public ProyectoDetalleResponse findDetalle(UUID id) {
         Proyecto proyecto = obtenerOFallar(id);
         return proyectoMap.toDetalle(

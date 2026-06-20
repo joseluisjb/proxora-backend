@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import ufps.edu.co.proxora.entity.EstadoProyecto;
 import ufps.edu.co.proxora.entity.Materia;
 import ufps.edu.co.proxora.entity.Proyecto;
-import ufps.edu.co.proxora.entity.ProyectoIntegrante;
 import ufps.edu.co.proxora.entity.Semestre;
 import ufps.edu.co.proxora.entity.Usuario;
 
@@ -25,9 +24,11 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, UUID> {
     @Query("SELECT pi.proyecto FROM ProyectoIntegrante pi WHERE pi.usuario = :usuario")
     Page<Proyecto> findAllByIntegrante(@Param("usuario") Usuario usuario, Pageable pageable);
 
-    @Query("SELECT pe.proyecto FROM ProyectoEvaluador pe WHERE pe.docente = :docente")
+    @Query(value = "SELECT pe.proyecto FROM ProyectoEvaluador pe WHERE pe.docente = :docente",
+           countQuery = "SELECT COUNT(pe) FROM ProyectoEvaluador pe WHERE pe.docente = :docente")
     Page<Proyecto> findAllByEvaluador(@Param("docente") Usuario docente, Pageable pageable);
 
-    @Query("SELECT pe.proyecto FROM ProyectoEvaluador pe WHERE pe.docente = :docente AND NOT EXISTS (SELECT e FROM Evaluacion e WHERE e.proyecto = pe.proyecto AND e.docente = :docente)")
+    @Query(value = "SELECT pe.proyecto FROM ProyectoEvaluador pe WHERE pe.docente = :docente AND NOT EXISTS (SELECT e FROM Evaluacion e WHERE e.proyecto = pe.proyecto AND e.docente = :docente)",
+           countQuery = "SELECT COUNT(pe) FROM ProyectoEvaluador pe WHERE pe.docente = :docente AND NOT EXISTS (SELECT e FROM Evaluacion e WHERE e.proyecto = pe.proyecto AND e.docente = :docente)")
     Page<Proyecto> findAllByEvaluadorPendientes(@Param("docente") Usuario docente, Pageable pageable);
 }
