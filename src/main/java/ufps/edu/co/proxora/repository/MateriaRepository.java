@@ -12,4 +12,5 @@ public interface MateriaRepository extends JpaRepository<Materia, UUID> {
     Page<Materia> findAllByActiva(Boolean activa, Pageable pageable);
     Page<Materia> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
     boolean existsByNombreIgnoreCase(String nombre);
+    boolean existsByNombreIgnoreCaseAndIdNot(String nombre, UUID id);
 }

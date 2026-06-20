@@ -11,4 +11,5 @@ import ufps.edu.co.proxora.entity.Semestre;
 public interface SemestreRepository extends JpaRepository<Semestre, UUID> {
     Page<Semestre> findAllByActivo(Boolean activo, Pageable pageable);
     boolean existsByNombreIgnoreCase(String nombre);
+    boolean existsByNombreIgnoreCaseAndIdNot(String nombre, UUID id);
 }

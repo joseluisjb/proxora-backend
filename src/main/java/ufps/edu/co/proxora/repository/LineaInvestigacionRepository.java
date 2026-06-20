@@ -15,4 +15,5 @@ public interface LineaInvestigacionRepository extends JpaRepository<LineaInvesti
     Page<LineaInvestigacion> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
 
     boolean existsByNombreIgnoreCase(String nombre);
+    boolean existsByNombreIgnoreCaseAndIdNot(String nombre, UUID id);
 }

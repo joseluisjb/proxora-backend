@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.MateriaRequest;
 import ufps.edu.co.proxora.dto.response.MateriaResponse;
 import ufps.edu.co.proxora.entity.Materia;
+import ufps.edu.co.proxora.exception.ConflictException;
 import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.MateriaMap;
 import ufps.edu.co.proxora.repository.MateriaRepository;
@@ -42,6 +43,8 @@ public class MateriaService {
 
     @Transactional
     public MateriaResponse create(MateriaRequest request) {
+        if (materiaRepository.existsByNombreIgnoreCase(request.nombre()))
+            throw new ConflictException("Ya existe una materia con el nombre: " + request.nombre());
         Materia materia = new Materia();
         materia.setNombre(request.nombre());
         materia.setCodigo(request.codigo());
@@ -56,6 +59,8 @@ public class MateriaService {
     @Transactional
     public MateriaResponse update(UUID id, MateriaRequest request) {
         Materia materia = obtenerOFallar(id);
+        if (materiaRepository.existsByNombreIgnoreCaseAndIdNot(request.nombre(), id))
+            throw new ConflictException("Ya existe una materia con el nombre: " + request.nombre());
         materia.setNombre(request.nombre());
         materia.setCodigo(request.codigo());
         if (request.activa() != null) materia.setActiva(request.activa());

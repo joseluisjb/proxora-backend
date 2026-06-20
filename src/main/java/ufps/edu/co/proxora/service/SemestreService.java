@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.SemestreRequest;
 import ufps.edu.co.proxora.dto.response.SemestreResponse;
 import ufps.edu.co.proxora.entity.Semestre;
+import ufps.edu.co.proxora.exception.ConflictException;
 import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.SemestreMap;
 import ufps.edu.co.proxora.repository.SemestreRepository;
@@ -36,12 +37,16 @@ public class SemestreService {
 
     @Transactional
     public SemestreResponse create(SemestreRequest request) {
+        if (semestreRepository.existsByNombreIgnoreCase(request.nombre()))
+            throw new ConflictException("Ya existe un semestre con el nombre: " + request.nombre());
         return semestreMap.toResponse(semestreRepository.save(semestreMap.toEntity(request)));
     }
 
     @Transactional
     public SemestreResponse update(UUID id, SemestreRequest request) {
         Semestre semestre = obtenerOFallar(id);
+        if (semestreRepository.existsByNombreIgnoreCaseAndIdNot(request.nombre(), id))
+            throw new ConflictException("Ya existe un semestre con el nombre: " + request.nombre());
         semestreMap.updateEntity(semestre, request);
         return semestreMap.toResponse(semestreRepository.save(semestre));
     }

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.LineaInvestigacionRequest;
 import ufps.edu.co.proxora.dto.response.LineaInvestigacionResponse;
 import ufps.edu.co.proxora.entity.LineaInvestigacion;
+import ufps.edu.co.proxora.exception.ConflictException;
 import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.LineaInvestigacionMap;
 import ufps.edu.co.proxora.repository.LineaInvestigacionRepository;
@@ -40,13 +41,16 @@ public class LineaInvestigacionService {
 
     @Transactional
     public LineaInvestigacionResponse create(LineaInvestigacionRequest request) {
-        LineaInvestigacion entity = lineaMap.toEntity(request);
-        return lineaMap.toResponse(lineaRepository.save(entity));
+        if (lineaRepository.existsByNombreIgnoreCase(request.nombre()))
+            throw new ConflictException("Ya existe una línea de investigación con el nombre: " + request.nombre());
+        return lineaMap.toResponse(lineaRepository.save(lineaMap.toEntity(request)));
     }
 
     @Transactional
     public LineaInvestigacionResponse update(UUID id, LineaInvestigacionRequest request) {
         LineaInvestigacion entity = obtenerOFallar(id);
+        if (lineaRepository.existsByNombreIgnoreCaseAndIdNot(request.nombre(), id))
+            throw new ConflictException("Ya existe una línea de investigación con el nombre: " + request.nombre());
         lineaMap.updateEntity(entity, request);
         return lineaMap.toResponse(lineaRepository.save(entity));
     }
