@@ -13,6 +13,7 @@ import ufps.edu.co.proxora.dto.request.UsuarioRequest;
 import ufps.edu.co.proxora.dto.response.UsuarioResponse;
 import ufps.edu.co.proxora.entity.Rol;
 import ufps.edu.co.proxora.entity.Usuario;
+import ufps.edu.co.proxora.exception.ConflictException;
 import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.UsuarioMap;
 import ufps.edu.co.proxora.repository.UsuarioRepository;
@@ -30,6 +31,8 @@ public class UsuarioService {
     public UsuarioResponse crear(UsuarioRequest request) {
         // BCrypt before acquiring DB connection to avoid holding it idle during hashing
         String contrasenaHash = passwordEncoder.encode(request.contrasena());
+        if (usuarioRepository.existsByCorreo(request.correo()))
+            throw new ConflictException("Ya existe un usuario con el correo: " + request.correo());
         Rol rolEstudiante = rolService.obtenerRolPorNombre("estudiante");
         Usuario usuario = new Usuario();
         usuario.setNombre(request.nombre());
