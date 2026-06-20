@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.LineaInvestigacionRequest;
 import ufps.edu.co.proxora.dto.response.LineaInvestigacionResponse;
 import ufps.edu.co.proxora.entity.LineaInvestigacion;
+import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.LineaInvestigacionMap;
 import ufps.edu.co.proxora.repository.LineaInvestigacionRepository;
 
@@ -54,6 +55,6 @@ public class LineaInvestigacionService {
 
     private LineaInvestigacion obtenerOFallar(UUID id) {
         return lineaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Línea de investigación no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Línea de investigación no encontrada"));
     }
 }

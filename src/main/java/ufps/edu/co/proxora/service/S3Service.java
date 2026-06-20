@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -50,7 +51,7 @@ public class S3Service {
 
     public byte[] downloadDocument(UUID idVersion) {
         String key = versionDocumentoRepository.findById(idVersion)
-                .orElseThrow(() -> new RuntimeException("Versión de documento no encontrada"))
+                .orElseThrow(() -> new ResourceNotFoundException("Versión de documento no encontrada"))
                 .getRutaS3();
         GetObjectRequest getRequest = GetObjectRequest.builder()
                 .bucket(bucketName)

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.MateriaRequest;
 import ufps.edu.co.proxora.dto.response.MateriaResponse;
 import ufps.edu.co.proxora.entity.Materia;
+import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.MateriaMap;
 import ufps.edu.co.proxora.repository.MateriaRepository;
 import ufps.edu.co.proxora.repository.UsuarioRepository;
@@ -45,7 +46,7 @@ public class MateriaService {
         materia.setActiva(request.activa() != null ? request.activa() : true);
         if (request.creadoPor() != null) {
             materia.setCreadoPor(usuarioRepository.findById(request.creadoPor())
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado")));
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado")));
         }
         return materiaMap.toResponse(materiaRepository.save(materia));
     }
@@ -65,6 +66,6 @@ public class MateriaService {
 
     public Materia obtenerOFallar(UUID id) {
         return materiaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Materia no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Materia no encontrada"));
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import ufps.edu.co.proxora.exception.BadRequestException;
+import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.entity.Usuario;
 import ufps.edu.co.proxora.repository.UsuarioRepository;
 
@@ -42,11 +44,11 @@ public class RecuperacionContrasenaService {
     @Transactional
     public void restablecerContrasena(String token, String nuevaContrasena) {
         Usuario usuario = usuarioRepository.findByTokenRecuperacion(token)
-                .orElseThrow(() -> new RuntimeException("Token inválido o expirado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Token inválido o expirado"));
 
         if (usuario.getTokenRecuperacionExpira() == null ||
                 OffsetDateTime.now().isAfter(usuario.getTokenRecuperacionExpira())) {
-            throw new RuntimeException("Token inválido o expirado");
+            throw new BadRequestException("Token inválido o expirado");
         }
 
         usuario.setContrasenaHash(passwordEncoder.encode(nuevaContrasena));

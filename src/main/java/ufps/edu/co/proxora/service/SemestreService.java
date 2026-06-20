@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.SemestreRequest;
 import ufps.edu.co.proxora.dto.response.SemestreResponse;
 import ufps.edu.co.proxora.entity.Semestre;
+import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.SemestreMap;
 import ufps.edu.co.proxora.repository.SemestreRepository;
 
@@ -49,6 +50,6 @@ public class SemestreService {
 
     public Semestre obtenerOFallar(UUID id) {
         return semestreRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Semestre no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Semestre no encontrado"));
     }
 }

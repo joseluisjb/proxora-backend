@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.VersionDocumentoRequest;
 import ufps.edu.co.proxora.dto.response.VersionDocumentoResponse;
 import ufps.edu.co.proxora.entity.VersionDocumento;
+import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.VersionDocumentoMap;
 import ufps.edu.co.proxora.repository.TipoDocumentoRepository;
 import ufps.edu.co.proxora.repository.UsuarioRepository;
@@ -62,7 +63,7 @@ public class VersionDocumentoService {
         v.setProyecto(proyectoService.obtenerOFallar(idProyecto));
         v.setTipo(idTipo != null
                 ? tipoRepository.findById(idTipo)
-                        .orElseThrow(() -> new RuntimeException("Tipo de documento no encontrado"))
+                        .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento no encontrado"))
                 : null);
         v.setEtiquetaVersion(etiquetaVersion);
         v.setRutaS3(result.keyfile());
@@ -70,7 +71,7 @@ public class VersionDocumentoService {
         v.setTamanoBytes(archivo.getSize());
         v.setMimeType(archivo.getContentType());
         v.setSubidoPor(usuarioRepository.findById(idSubidoPor)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado")));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado")));
         return versionMap.toResponse(versionRepository.save(v));
     }
 
@@ -80,14 +81,14 @@ public class VersionDocumentoService {
             byte[] bytes = s3Service.downloadDocument(id);
             return new DescargaResult(bytes, v.getNombreArchivo(), v.getMimeType());
         } catch (software.amazon.awssdk.services.s3.model.NoSuchKeyException e) {
-            throw new RuntimeException("El archivo no existe en el almacenamiento. Key: " + v.getRutaS3());
+            throw new ResourceNotFoundException("El archivo no existe en el almacenamiento. Key: " + v.getRutaS3());
         }
     }
 
     private void mapRequestToEntity(VersionDocumentoRequest request, VersionDocumento v) {
         v.setTipo(request.idTipo() != null
                 ? tipoRepository.findById(request.idTipo())
-                        .orElseThrow(() -> new RuntimeException("Tipo de documento no encontrado"))
+                        .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento no encontrado"))
                 : null);
         v.setEtiquetaVersion(request.etiquetaVersion());
         v.setRutaS3(request.rutaS3());
@@ -95,11 +96,11 @@ public class VersionDocumentoService {
         v.setTamanoBytes(request.tamanoBytes());
         v.setMimeType(request.mimeType());
         v.setSubidoPor(usuarioRepository.findById(request.idSubidoPor())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado")));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado")));
     }
 
     private VersionDocumento obtenerOFallar(UUID id) {
         return versionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Versión de documento no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Versión de documento no encontrada"));
     }
 }

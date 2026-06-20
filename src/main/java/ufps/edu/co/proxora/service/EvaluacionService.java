@@ -14,6 +14,8 @@ import ufps.edu.co.proxora.entity.Evaluacion;
 import ufps.edu.co.proxora.entity.Proyecto;
 import ufps.edu.co.proxora.entity.ProyectoEvaluador;
 import ufps.edu.co.proxora.entity.Usuario;
+import ufps.edu.co.proxora.exception.ConflictException;
+import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.EvaluacionMap;
 import ufps.edu.co.proxora.repository.EvaluacionRepository;
 import ufps.edu.co.proxora.repository.ProyectoEvaluadorRepository;
@@ -59,7 +61,7 @@ public class EvaluacionService {
         Proyecto proyecto = proyectoService.obtenerOFallar(idProyecto);
         Usuario docente = obtenerUsuarioOFallar(request.idDocente());
         if (evaluadorRepository.existsByProyectoAndDocente(proyecto, docente)) {
-            throw new RuntimeException("El docente ya es evaluador de este proyecto");
+            throw new ConflictException("El docente ya es evaluador de este proyecto");
         }
         ProyectoEvaluador evaluador = new ProyectoEvaluador();
         evaluador.setProyecto(proyecto);
@@ -75,7 +77,7 @@ public class EvaluacionService {
 
     public void removerEvaluador(UUID idEvaluador) {
         if (!evaluadorRepository.existsById(idEvaluador)) {
-            throw new RuntimeException("Evaluador no encontrado");
+            throw new ResourceNotFoundException("Evaluador no encontrado");
         }
         evaluadorRepository.deleteById(idEvaluador);
     }
@@ -90,6 +92,6 @@ public class EvaluacionService {
 
     private Usuario obtenerUsuarioOFallar(UUID id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     }
 }

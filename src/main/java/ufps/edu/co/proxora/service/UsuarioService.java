@@ -13,6 +13,7 @@ import ufps.edu.co.proxora.dto.request.UsuarioRequest;
 import ufps.edu.co.proxora.dto.response.UsuarioResponse;
 import ufps.edu.co.proxora.entity.Rol;
 import ufps.edu.co.proxora.entity.Usuario;
+import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.UsuarioMap;
 import ufps.edu.co.proxora.repository.UsuarioRepository;
 
@@ -40,7 +41,7 @@ public class UsuarioService {
 
     public UsuarioResponse findById(UUID id) {
         return usuarioMap.toUsuarioResponse(
-                usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado")));
+                usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado")));
     }
 
     public Page<UsuarioResponse> findAll(Pageable pageable){
@@ -60,7 +61,7 @@ public class UsuarioService {
     @Transactional
     public void desactivarUsuario(UUID id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         usuario.setActivo(false);
         usuarioRepository.save(usuario);
     }
@@ -68,7 +69,7 @@ public class UsuarioService {
     @Transactional
     public void activarUsuario(UUID id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         usuario.setActivo(true);
         usuarioRepository.save(usuario);
     }
@@ -76,7 +77,7 @@ public class UsuarioService {
     @Transactional
     public void convertirEnDocente(UUID id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         usuario.setRol(rolService.obtenerRolPorNombre("docente"));
         usuarioRepository.save(usuario);
     }
@@ -84,7 +85,7 @@ public class UsuarioService {
     @Transactional
     public void convertirEnEstudiante(UUID id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         usuario.setRol(rolService.obtenerRolPorNombre("estudiante"));
         usuarioRepository.save(usuario);
     }

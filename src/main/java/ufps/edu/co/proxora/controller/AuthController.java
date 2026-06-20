@@ -16,6 +16,7 @@ import ufps.edu.co.proxora.dto.request.RestablecerContrasenaRequest;
 import ufps.edu.co.proxora.dto.response.LoginResponse;
 import ufps.edu.co.proxora.entity.Usuario;
 import ufps.edu.co.proxora.repository.UsuarioRepository;
+import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.service.JwtService;
 import ufps.edu.co.proxora.service.RecuperacionContrasenaService;
 
@@ -40,7 +41,7 @@ public class AuthController {
         );
 
         Usuario usuario = usuarioRepository.findByCorreo(request.correo())
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         String token = jwtService.generateToken(usuario);
 

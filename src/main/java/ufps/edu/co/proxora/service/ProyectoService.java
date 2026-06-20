@@ -22,6 +22,7 @@ import ufps.edu.co.proxora.entity.ProyectoIntegranteId;
 import ufps.edu.co.proxora.entity.ProyectoLinea;
 import ufps.edu.co.proxora.entity.ProyectoLineaId;
 import ufps.edu.co.proxora.entity.Usuario;
+import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.ProyectoMap;
 import ufps.edu.co.proxora.entity.ProyectoEvaluador;
 import ufps.edu.co.proxora.repository.EstadoProyectoRepository;
@@ -142,7 +143,7 @@ public class ProyectoService {
         if (request.idMateria() != null) proyecto.setMateria(materiaService.obtenerOFallar(request.idMateria()));
         if (request.idEstado() != null) proyecto.setEstado(obtenerEstadoOFallar(request.idEstado()));
         if (request.idVisibilidad() != null) proyecto.setVisibilidad(visibilidadRepository.findById(request.idVisibilidad())
-                .orElseThrow(() -> new RuntimeException("Nivel de visibilidad no encontrado")));
+                .orElseThrow(() -> new ResourceNotFoundException("Nivel de visibilidad no encontrado")));
         proyecto.setActualizadoEn(OffsetDateTime.now());
         Proyecto saved = proyectoRepository.save(proyecto);
         if (request.integrantesIds() != null) {
@@ -168,7 +169,7 @@ public class ProyectoService {
                 ProyectoLineaId pk = new ProyectoLineaId(saved.getId(), lid);
                 lineaRepository.save(new ProyectoLinea(pk, saved,
                         lineaInvestigacionRepository.findById(lid)
-                                .orElseThrow(() -> new RuntimeException("Línea de investigación no encontrada"))));
+                                .orElseThrow(() -> new ResourceNotFoundException("Línea de investigación no encontrada"))));
             });
         }
         if (request.evaluadoresIds() != null) {
@@ -228,7 +229,7 @@ public class ProyectoService {
         if (!lineaRepository.existsById(pk)) {
             lineaRepository.save(new ProyectoLinea(pk, proyecto,
                     lineaInvestigacionRepository.findById(idLinea)
-                            .orElseThrow(() -> new RuntimeException("Línea de investigación no encontrada"))));
+                            .orElseThrow(() -> new ResourceNotFoundException("Línea de investigación no encontrada"))));
         }
     }
 
@@ -249,7 +250,7 @@ public class ProyectoService {
     public ProyectoResponse cambiarVisibilidad(UUID id, Short idVisibilidad) {
         Proyecto proyecto = obtenerOFallar(id);
         proyecto.setVisibilidad(visibilidadRepository.findById(idVisibilidad)
-                .orElseThrow(() -> new RuntimeException("Nivel de visibilidad no encontrado")));
+                .orElseThrow(() -> new ResourceNotFoundException("Nivel de visibilidad no encontrado")));
         proyecto.setActualizadoEn(OffsetDateTime.now());
         return toResponse(proyectoRepository.save(proyecto));
     }
@@ -258,7 +259,7 @@ public class ProyectoService {
 
     public Proyecto obtenerOFallar(UUID id) {
         return proyectoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Proyecto no encontrado"));
     }
 
     private void mapRequestToEntity(ProyectoRequest request, Proyecto proyecto) {
@@ -268,7 +269,7 @@ public class ProyectoService {
         proyecto.setMateria(request.idMateria() != null ? materiaService.obtenerOFallar(request.idMateria()) : null);
         proyecto.setEstado(obtenerEstadoOFallar(request.idEstado()));
         proyecto.setVisibilidad(visibilidadRepository.findById(request.idVisibilidad())
-                .orElseThrow(() -> new RuntimeException("Nivel de visibilidad no encontrado")));
+                .orElseThrow(() -> new ResourceNotFoundException("Nivel de visibilidad no encontrado")));
         proyecto.setRegistradoPor(obtenerUsuarioOFallar(request.idRegistradoPor()));
     }
 
@@ -290,7 +291,7 @@ public class ProyectoService {
                 ProyectoLineaId pk = new ProyectoLineaId(proyecto.getId(), lid);
                 lineaRepository.save(new ProyectoLinea(pk, proyecto,
                         lineaInvestigacionRepository.findById(lid)
-                                .orElseThrow(() -> new RuntimeException("Línea de investigación no encontrada"))));
+                                .orElseThrow(() -> new ResourceNotFoundException("Línea de investigación no encontrada"))));
             });
         }
         if (request.evaluadoresIds() != null) {
@@ -315,11 +316,11 @@ public class ProyectoService {
 
     private ufps.edu.co.proxora.entity.EstadoProyecto obtenerEstadoOFallar(Short id) {
         return estadoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Estado de proyecto no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Estado de proyecto no encontrado"));
     }
 
     private ufps.edu.co.proxora.entity.Usuario obtenerUsuarioOFallar(UUID id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     }
 }
