@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.LoginRequest;
+import ufps.edu.co.proxora.dto.request.RecuperarContrasenaRequest;
+import ufps.edu.co.proxora.dto.request.RestablecerContrasenaRequest;
 import ufps.edu.co.proxora.dto.response.LoginResponse;
 import ufps.edu.co.proxora.entity.Usuario;
 import ufps.edu.co.proxora.repository.UsuarioRepository;
 import ufps.edu.co.proxora.service.JwtService;
+import ufps.edu.co.proxora.service.RecuperacionContrasenaService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,6 +27,7 @@ public class AuthController {
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
     private final UsuarioRepository usuarioRepository;
+    private final RecuperacionContrasenaService recuperacionService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
@@ -46,6 +50,20 @@ public class AuthController {
             usuario.getNombre() + " " + usuario.getApellido(),
             usuario.getId()
         ));
+    }
+
+    @PostMapping("/recuperar-contrasena")
+    public ResponseEntity<Void> recuperarContrasena(
+            @Valid @RequestBody RecuperarContrasenaRequest request) {
+        recuperacionService.solicitarRecuperacion(request.correo());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/restablecer-contrasena")
+    public ResponseEntity<Void> restablecerContrasena(
+            @Valid @RequestBody RestablecerContrasenaRequest request) {
+        recuperacionService.restablecerContrasena(request.token(), request.nuevaContrasena());
+        return ResponseEntity.ok().build();
     }
 }
 

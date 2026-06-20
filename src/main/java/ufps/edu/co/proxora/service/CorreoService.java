@@ -33,6 +33,12 @@ public class CorreoService {
         enviar(docente.getCorreo(), asunto, cuerpo);
     }
 
+    public void notificarRecuperacionContrasena(String destinatario, String nombre, String linkRestablecimiento) {
+        String asunto = "Proxora - Recuperación de contraseña";
+        String cuerpo = buildRecuperacionHtml(nombre, linkRestablecimiento);
+        enviar(destinatario, asunto, cuerpo);
+    }
+
     public void notificarCalificacion(List<ProyectoIntegrante> integrantes, Proyecto proyecto, Evaluacion evaluacion) {
         String asunto = "Proxora - Tu proyecto ha sido calificado";
         String cuerpo = buildCalificacionHtml(proyecto, evaluacion);
@@ -51,6 +57,24 @@ public class CorreoService {
         } catch (Exception e) {
             log.error("Error al enviar correo a {}: {}", destinatario, e.getMessage());
         }
+    }
+
+    private String buildRecuperacionHtml(String nombre, String link) {
+        return """
+                <html><body style="font-family:Arial,sans-serif;color:#222;max-width:600px;margin:auto">
+                  <h2 style="color:#4f46e5">Proxora</h2>
+                  <p>Hola, <strong>%s</strong>.</p>
+                  <p>Recibimos una solicitud para restablecer tu contraseña. Haz clic en el botón para continuar:</p>
+                  <div style="text-align:center;margin:24px 0">
+                    <a href="%s" style="background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">
+                      Restablecer contraseña
+                    </a>
+                  </div>
+                  <p>Este enlace expira en <strong>30 minutos</strong>. Si no solicitaste esto, ignora este correo.</p>
+                  <br>
+                  <p style="color:#888;font-size:12px">Este es un mensaje automático, no respondas a este correo.</p>
+                </body></html>
+                """.formatted(nombre, link);
     }
 
     private String buildEvaluadorAsignadoHtml(Usuario docente, Proyecto proyecto) {
