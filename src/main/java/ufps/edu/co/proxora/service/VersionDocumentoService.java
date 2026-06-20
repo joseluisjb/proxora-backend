@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.VersionDocumentoRequest;
 import ufps.edu.co.proxora.dto.response.VersionDocumentoResponse;
 import ufps.edu.co.proxora.entity.VersionDocumento;
+import ufps.edu.co.proxora.exception.ForbiddenException;
 import ufps.edu.co.proxora.exception.ResourceNotFoundException;
 import ufps.edu.co.proxora.mapper.VersionDocumentoMap;
 import ufps.edu.co.proxora.repository.TipoDocumentoRepository;
@@ -84,6 +85,8 @@ public class VersionDocumentoService {
 
     public DescargaResult downloadDocumento(UUID id) {
         VersionDocumento v = obtenerOFallar(id);
+        if (!"lectura_descarga".equals(v.getProyecto().getVisibilidad().getNombre()))
+            throw new ForbiddenException("El proyecto no permite la descarga de documentos");
         try {
             byte[] bytes = s3Service.downloadDocument(id);
             return new DescargaResult(bytes, v.getNombreArchivo(), v.getMimeType());
