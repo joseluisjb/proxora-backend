@@ -9,6 +9,9 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import lombok.RequiredArgsConstructor;
 import ufps.edu.co.proxora.dto.request.VersionDocumentoRequest;
 import ufps.edu.co.proxora.dto.response.VersionDocumentoResponse;
@@ -85,7 +88,7 @@ public class VersionDocumentoService {
 
     public DescargaResult downloadDocumento(UUID id) {
         VersionDocumento v = obtenerOFallar(id);
-        if (!"lectura_descarga".equals(v.getProyecto().getVisibilidad().getNombre()))
+        if (!tieneAccesoDescarga(v))
             throw new ForbiddenException("El proyecto no permite la descarga de documentos");
         try {
             byte[] bytes = s3Service.downloadDocument(id);
@@ -107,6 +110,15 @@ public class VersionDocumentoService {
         v.setMimeType(request.mimeType());
         v.setSubidoPor(usuarioRepository.findById(request.idSubidoPor())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado")));
+    }
+
+    private boolean tieneAccesoDescarga(VersionDocumento v) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_DOCENTE")
+                        || a.getAuthority().equals("ROLE_ADMINISTRADOR")))
+            return true;
+        return "lectura_descarga".equals(v.getProyecto().getVisibilidad().getNombre());
     }
 
     private VersionDocumento obtenerOFallar(UUID id) {
