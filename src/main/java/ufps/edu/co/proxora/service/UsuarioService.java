@@ -28,12 +28,14 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponse crear(UsuarioRequest request) {
+        // BCrypt before acquiring DB connection to avoid holding it idle during hashing
+        String contrasenaHash = passwordEncoder.encode(request.contrasena());
         Rol rolEstudiante = rolService.obtenerRolPorNombre("estudiante");
         Usuario usuario = new Usuario();
         usuario.setNombre(request.nombre());
         usuario.setApellido(request.apellido());
         usuario.setCorreo(request.correo());
-        usuario.setContrasenaHash(passwordEncoder.encode(request.contrasena()));
+        usuario.setContrasenaHash(contrasenaHash);
         usuario.setRol(rolEstudiante);
         usuario.setActivo(true);
         return usuarioMap.toUsuarioResponse(usuarioRepository.save(usuario));
