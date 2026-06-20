@@ -17,6 +17,7 @@ import ufps.edu.co.proxora.entity.Usuario;
 import ufps.edu.co.proxora.mapper.EvaluacionMap;
 import ufps.edu.co.proxora.repository.EvaluacionRepository;
 import ufps.edu.co.proxora.repository.ProyectoEvaluadorRepository;
+import ufps.edu.co.proxora.repository.ProyectoIntegranteRepository;
 import ufps.edu.co.proxora.repository.UsuarioRepository;
 
 @Service
@@ -25,9 +26,11 @@ public class EvaluacionService {
 
     private final EvaluacionRepository evaluacionRepository;
     private final ProyectoEvaluadorRepository evaluadorRepository;
+    private final ProyectoIntegranteRepository integranteRepository;
     private final UsuarioRepository usuarioRepository;
     private final ProyectoService proyectoService;
     private final EvaluacionMap evaluacionMap;
+    private final CorreoService correoService;
 
     public List<EvaluacionResponse> findByProyecto(UUID idProyecto) {
         return evaluacionRepository.findAllByProyecto(proyectoService.obtenerOFallar(idProyecto))
@@ -47,7 +50,9 @@ public class EvaluacionService {
         evaluacion.setDocente(docente);
         evaluacion.setCalificacion(request.calificacion());
         evaluacion.setComentario(request.comentario());
-        return evaluacionMap.toEvaluacionResponse(evaluacionRepository.save(evaluacion));
+        Evaluacion saved = evaluacionRepository.save(evaluacion);
+        correoService.notificarCalificacion(integranteRepository.findAllByProyecto(proyecto), proyecto, saved);
+        return evaluacionMap.toEvaluacionResponse(saved);
     }
 
     public ProyectoEvaluadorResponse asignarEvaluador(UUID idProyecto, ProyectoEvaluadorRequest request) {
@@ -61,7 +66,11 @@ public class EvaluacionService {
         evaluador.setDocente(docente);
         evaluador.setAsignadoPor(obtenerUsuarioOFallar(request.idAsignadoPor()));
         evaluador.setCorreoEnviado(false);
-        return evaluacionMap.toEvaluadorResponse(evaluadorRepository.save(evaluador));
+        ProyectoEvaluador saved = evaluadorRepository.save(evaluador);
+        correoService.notificarEvaluadorAsignado(docente, proyecto);
+        saved.setCorreoEnviado(true);
+        evaluadorRepository.save(saved);
+        return evaluacionMap.toEvaluadorResponse(saved);
     }
 
     public void removerEvaluador(UUID idEvaluador) {
